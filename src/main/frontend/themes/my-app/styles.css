@@ -1,0 +1,4 @@
+@import url('./main-layout.css');
+@import url('./views/página-principal-view.css');
+@import url('./views/registodeempleados-view.css');
+@import url('./views/detalles-empleados-view.css');
