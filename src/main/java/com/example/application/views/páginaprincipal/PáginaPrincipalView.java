@@ -24,8 +24,6 @@ public class PáginaPrincipalView extends Composite<VerticalLayout> {
         H1 h1 = new H1();
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
-        tabs.setWidth("100%");
-        setTabsSampleData(tabs);
         h1.setText("------------PROYECTO FINAL DEL GRUPO 6 - GESTOR DE EMPLEADOS-------------");
         h1.setWidth("1500px");
         h1.setHeight("800px");
@@ -34,9 +32,5 @@ public class PáginaPrincipalView extends Composite<VerticalLayout> {
         getContent().add(h1);
     }
 
-    private void setTabsSampleData(Tabs tabs) {
-        tabs.add(new Tab("Dashboard"));
-        tabs.add(new Tab("Payment"));
-        tabs.add(new Tab("Shipping"));
-    }
+
 }

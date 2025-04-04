@@ -61,6 +61,8 @@ public class DetallesEmpleadosView extends Div {
         add(layout);
     }
 
+
+
     private HorizontalLayout createMobileFilters() {
         // Mobile version
         HorizontalLayout mobileFilters = new HorizontalLayout();
@@ -87,28 +89,29 @@ public class DetallesEmpleadosView extends Div {
 
     public static class Filters extends Div implements Specification<SamplePerson> {
 
-        private final TextField name = new TextField("Name");
-        private final TextField phone = new TextField("Phone");
-        private final DatePicker startDate = new DatePicker("Date of Birth");
+        private final TextField name = new TextField("Nombre");
+        private final TextField phone = new TextField("Teléfono");
+        private final DatePicker startDate = new DatePicker("Fecha de Ingreso");
         private final DatePicker endDate = new DatePicker();
-        private final MultiSelectComboBox<String> occupations = new MultiSelectComboBox<>("Occupation");
-        private final CheckboxGroup<String> roles = new CheckboxGroup<>("Role");
+        private final MultiSelectComboBox<String> occupations = new MultiSelectComboBox<>("Tipo de contrato");
+        private final CheckboxGroup<String> roles = new CheckboxGroup<>("Puesto de trabajo");
 
         public Filters(Runnable onSearch) {
+
 
             setWidthFull();
             addClassName("filter-layout");
             addClassNames(LumoUtility.Padding.Horizontal.LARGE, LumoUtility.Padding.Vertical.MEDIUM,
                     LumoUtility.BoxSizing.BORDER);
-            name.setPlaceholder("First or last name");
+            name.setPlaceholder("Primer nombre o apellido");
 
-            occupations.setItems("Insurance Clerk", "Mortarman", "Beer Coil Cleaner", "Scale Attendant");
+            occupations.setItems("PERMANENTE", "TEMPORAL", "PASANTÍA", "INDEFINIDO");
 
-            roles.setItems("Worker", "Supervisor", "Manager", "External");
+            roles.setItems("GERENTE", "SUPERVISOR", "ASISTENTE", "TÉCNICO");
             roles.addClassName("double-width");
 
             // Action buttons
-            Button resetBtn = new Button("Reset");
+            Button resetBtn = new Button("Limpiar filtros");
             resetBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             resetBtn.addClickListener(e -> {
                 name.clear();
@@ -119,25 +122,25 @@ public class DetallesEmpleadosView extends Div {
                 roles.clear();
                 onSearch.run();
             });
-            Button searchBtn = new Button("Search");
+            Button searchBtn = new Button("Buscar");
             searchBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             searchBtn.addClickListener(e -> onSearch.run());
 
             Div actions = new Div(resetBtn, searchBtn);
             actions.addClassName(LumoUtility.Gap.SMALL);
-            actions.addClassName("actions");
+            actions.addClassName("acciones");
 
             add(name, phone, createDateRangeFilter(), occupations, roles, actions);
         }
 
         private Component createDateRangeFilter() {
-            startDate.setPlaceholder("From");
+            startDate.setPlaceholder("De");
 
-            endDate.setPlaceholder("To");
+            endDate.setPlaceholder("hasta");
 
             // For screen readers
-            startDate.setAriaLabel("From date");
-            endDate.setAriaLabel("To date");
+            startDate.setAriaLabel("De la fecha");
+            endDate.setAriaLabel("hasta la fecha");
 
             FlexLayout dateRangeComponent = new FlexLayout(startDate, new Text(" – "), endDate);
             dateRangeComponent.setAlignItems(FlexComponent.Alignment.BASELINE);
@@ -208,7 +211,7 @@ public class DetallesEmpleadosView extends Div {
         }
 
         private Expression<String> ignoreCharacters(String characters, CriteriaBuilder criteriaBuilder,
-                Expression<String> inExpression) {
+                                                    Expression<String> inExpression) {
             Expression<String> expression = inExpression;
             for (int i = 0; i < characters.length(); i++) {
                 expression = criteriaBuilder.function("replace", String.class, expression,
@@ -221,13 +224,16 @@ public class DetallesEmpleadosView extends Div {
 
     private Component createGrid() {
         grid = new Grid<>(SamplePerson.class, false);
-        grid.addColumn("firstName").setAutoWidth(true);
-        grid.addColumn("lastName").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("phone").setAutoWidth(true);
-        grid.addColumn("dateOfBirth").setAutoWidth(true);
-        grid.addColumn("occupation").setAutoWidth(true);
-        grid.addColumn("role").setAutoWidth(true);
+        grid.removeAllColumns();
+        grid.addColumn(SamplePerson::getFirstName).setHeader("Nombre Completo");
+        grid.addColumn(SamplePerson::getLastName).setHeader("Código del Empleado");
+        grid.addColumn(SamplePerson::getPhone).setHeader("Número de Teléfono");
+        grid.addColumn(SamplePerson::getEmail).setHeader("Correo Electrónico");
+        grid.addColumn(SamplePerson::getOccupation).setHeader("Departamento");
+        grid.addColumn(SamplePerson::getRole).setHeader("Puesto");
+        grid.addColumn(SamplePerson::getDateOfBirth).setHeader("Fecha de Ingreso");
+        grid.addColumn(SamplePerson::isImportant).setHeader("Salario");
+        grid.addColumn(SamplePerson::isImportant).setHeader("Tipo de contrato");
 
         grid.setItems(query -> samplePersonService.list(VaadinSpringDataHelpers.toSpringPageRequest(query), filters)
                 .stream());
@@ -236,6 +242,7 @@ public class DetallesEmpleadosView extends Div {
 
         return grid;
     }
+
 
     private void refreshGrid() {
         grid.getDataProvider().refreshAll();
